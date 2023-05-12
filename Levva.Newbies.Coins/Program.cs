@@ -1,4 +1,6 @@
 using Levva.Newbies.Coins.Data;
+using Levva.Newbies.Coins.Data.Interfaces;
+using Levva.Newbies.Coins.Data.Repositories;
 using Levva.Newbies.Coins.Logic.MapperProfiles;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -16,8 +18,10 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddDbContext<Context>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("Levva.Newbies.Coins")));
-
         builder.Services.AddAutoMapper(typeof(DefaultMapper));
+
+        builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
 
         var app = builder.Build();
 
