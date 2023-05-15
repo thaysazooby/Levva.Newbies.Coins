@@ -28,6 +28,11 @@ namespace Levva.Newbies.Coins.Data.Repositories
             return _context.Usuario.Find(Id);
         }
 
+        public Usuario GetByEmailAndSenha(string email, string senha)
+        {
+            return _context.Usuario.FirstOrDefault(x => x.Email.Equals(email) && x.Senha.Equals(senha));
+        }
+
         public List<Usuario> GetAll()
         {
             return _context.Usuario.ToList();

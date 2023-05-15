@@ -3,7 +3,11 @@ using Levva.Newbies.Coins.Data.Interfaces;
 using Levva.Newbies.Coins.Domain.Models;
 using Levva.Newbies.Coins.Logic.Dtos;
 using Levva.Newbies.Coins.Logic.Interfaces;
-using System.Runtime.InteropServices;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Levva.Newbies.Coins.Logic.Services
 {
@@ -11,10 +15,12 @@ namespace Levva.Newbies.Coins.Logic.Services
     {
         private readonly IUsuarioRepository _repository;
         private readonly IMapper _mapper;
-        public UsuarioService(IUsuarioRepository repository, IMapper mapper)
+        private readonly IConfiguration _configuration;
+        public UsuarioService(IUsuarioRepository repository, IMapper mapper, IConfiguration configuration)
         {
             _repository = repository;
             _mapper = mapper;
+            _configuration = configuration;
         }
         public void Create(UsuarioDto usuario)
         {
@@ -43,6 +49,36 @@ namespace Levva.Newbies.Coins.Logic.Services
         {
             var _usuario = _mapper.Map<Usuario>(usuario);
             _repository.Update(_usuario);
+        }
+
+        public LoginDto Login(LoginDto loginDto)
+        {
+            var usuario = _repository.GetByEmailAndSenha(loginDto.Email, loginDto.Senha);
+
+            if (usuario == null)
+                return null;
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration.GetSection("Secret").Value);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, usuario.Email)
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            loginDto.Token = tokenHandler.WriteToken(token);
+            loginDto.Nome = usuario.Nome;
+            loginDto.Email = usuario.Email;
+            loginDto.Senha = null;
+
+            return loginDto;
         }
     }
 }

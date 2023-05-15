@@ -9,5 +9,7 @@ namespace Levva.Newbies.Coins.Logic.Interfaces
         List<UsuarioDto> GetAll();
         void Update(UsuarioDto usuario);
         void Delete(int id);
+
+        LoginDto Login(LoginDto loginDto);
     }
 }
