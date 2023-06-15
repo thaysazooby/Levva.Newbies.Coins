@@ -10,7 +10,10 @@ namespace Levva.Newbies.Coins.Logic.MapperProfiles
         {
             CreateMap<UsuarioDto, Usuario>().ReverseMap();
             CreateMap<TransacaoDto, Transacao>().ReverseMap();
+            CreateMap<CreateTransacaoDto, Transacao>().ReverseMap();
             CreateMap<CategoriaDto, Categoria>().ReverseMap();
+            CreateMap<CreateCategoriaDto, Categoria>().ReverseMap();
+
         }
     }
 }

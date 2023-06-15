@@ -30,7 +30,7 @@ namespace Levva.Newbies.Coins.Data.Repositories
 
         public Usuario GetByEmailAndSenha(string email, string senha)
         {
-            return _context.Usuario.FirstOrDefault(x => x.Email.Equals(email) && x.Senha.Equals(senha));
+            return _context.Usuario.FirstOrDefault(x => x.Email.Equals(email) && x.Password.Equals(senha));
         }
 
         public List<Usuario> GetAll()

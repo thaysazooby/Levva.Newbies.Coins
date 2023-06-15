@@ -15,10 +15,10 @@ namespace Levva.Newbies.Coins.Logic.Services
             _repository = repository;
             _mapper = mapper;
         }
-        public void Create(CategoriaDto categoria)
+        public CategoriaDto Create(CreateCategoriaDto categoria)
         {
             var _categoria = _mapper.Map<Categoria>(categoria);
-            _repository.Create(_categoria);
+            return _mapper.Map<CategoriaDto>(_repository.Create(_categoria));
         }
 
         public void Delete(int Id)

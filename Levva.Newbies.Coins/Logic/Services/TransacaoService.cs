@@ -15,10 +15,18 @@ namespace Levva.Newbies.Coins.Logic.Services
             _repository = repository;
             _mapper = mapper;
         }
-        public void Create(TransacaoDto transacao)
+        public TransacaoDto Create(int userId, CreateTransacaoDto transacao)
         {
             var _transacao = _mapper.Map<Transacao>(transacao);
-            _repository.Create(_transacao);
+            _transacao.UserId = userId;
+            var transactionDto = _repository.Create(_transacao);
+
+            return _mapper.Map<TransacaoDto>(transactionDto);
+        }
+
+        public void Create(TransacaoDto transacao)
+        {
+            throw new NotImplementedException();
         }
 
         public void Delete(int Id)
@@ -36,6 +44,12 @@ namespace Levva.Newbies.Coins.Logic.Services
         {
             var transacoes = _mapper.Map<List<TransacaoDto>>(_repository.GetAll());
             return transacoes;
+        }
+
+        public List<TransacaoDto> SearchDescription(string search)
+        {
+            var transactions = _repository.SearchByDescription(search); 
+            return _mapper.Map<List<TransacaoDto>>(transactions);
         }
 
         public void Update(TransacaoDto transacao)

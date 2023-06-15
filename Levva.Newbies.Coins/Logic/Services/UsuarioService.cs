@@ -51,9 +51,9 @@ namespace Levva.Newbies.Coins.Logic.Services
             _repository.Update(_usuario);
         }
 
-        public LoginDto Login(LoginDto loginDto)
+        public LoginResponseDto Login(LoginDto loginDto)
         {
-            var usuario = _repository.GetByEmailAndSenha(loginDto.Email, loginDto.Senha);
+            var usuario = _repository.GetByEmailAndSenha(loginDto.Email, loginDto.Password);
 
             if (usuario == null)
                 return null;
@@ -65,6 +65,7 @@ namespace Levva.Newbies.Coins.Logic.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
+                    new Claim(ClaimTypes.Name, usuario.Id.ToString()),
                     new Claim(ClaimTypes.Name, usuario.Email)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
@@ -72,13 +73,14 @@ namespace Levva.Newbies.Coins.Logic.Services
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
+            var loginResponse = new LoginResponseDto { Id = usuario.Id, Email = usuario.Email, Name = usuario.Name };
 
-            loginDto.Token = tokenHandler.WriteToken(token);
-            loginDto.Nome = usuario.Nome;
-            loginDto.Email = usuario.Email;
-            loginDto.Senha = null;
+            loginResponse.Token = $"Bearer { tokenHandler.WriteToken(token)}";
+           // loginDto.Nome = usuario.Nome;
+          //  loginDto.Email = usuario.Email;
+           // loginDto.Senha = null;
 
-            return loginDto;
+            return loginResponse;
         }
     }
 }

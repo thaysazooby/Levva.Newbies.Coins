@@ -1,47 +1,58 @@
 ﻿using Levva.Newbies.Coins.Logic.Dtos;
 using Levva.Newbies.Coins.Logic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Levva.Newbies.Coins.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route("api/transaction")]
     [ApiController]
     public class TransacaoController : ControllerBase
     {
         private readonly ITransacaoService _service;
-        public TransacaoController(ITransacaoService service)
+        private readonly ICategoriaService _categoriaService;
+        public TransacaoController(ITransacaoService service, ICategoriaService categoriaService)
         {
             _service = service;
+            _categoriaService = categoriaService;
         }
 
         [HttpPost]
-        public IActionResult Create(TransacaoDto transacao)
+        public IActionResult Create(CreateTransacaoDto transacao)
         {
-            _service.Create(transacao);
-            return Created("", transacao);
+            var userId = User.Identity!.Name;
+
+            var transaction = _service.Create(Convert.ToInt32(userId), transacao);
+            var category = _categoriaService.Get(transacao.CategoryId);
+
+            transaction.Category = category;
+            return Created("", transaction);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public ActionResult<TransacaoDto> Get(int Id)
         {
             return _service.Get(Id);
         }
 
-        [HttpGet("list")]
-        public ActionResult<List<TransacaoDto>> Get()
+        [HttpGet]
+        public ActionResult<List<TransacaoDto>> GetAll([FromQuery] string? search)
         {
-            return _service.GetAll();
+            if (search == null) return _service.GetAll();
+
+            return _service.SearchDescription(search);
         }
 
-        [HttpPut]
-        public IActionResult Update(TransacaoDto transacao)
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, TransacaoDto transacao)
         {
             _service.Update(transacao);
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int Id)
         {
             _service.Delete(Id);

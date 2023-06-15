@@ -11,10 +11,11 @@ namespace Levva.Newbies.Coins.Data.Repositories
         {
             _context = context;
         }
-        public void Create(Categoria categoria)
+        public Categoria Create(Categoria categoria)
         {
             _context.Categoria.Add(categoria);
             _context.SaveChanges();
+            return categoria;
         }
 
         public void Delete(int Id)

@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Levva.Newbies.Coins.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route("api/user")]
     [ApiController]
     public class UsuarioController : ControllerBase
     {
@@ -24,33 +25,33 @@ namespace Levva.Newbies.Coins.Controllers
             return Created("", usuario);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public ActionResult<UsuarioDto> Get(int Id) 
         {
             return _service.Get(Id);
         }
 
-        [HttpGet("list")]
-        public ActionResult<List<UsuarioDto>> Get()
+        [HttpGet]
+        public ActionResult<List<UsuarioDto>> GetAll()
         {
             return _service.GetAll();
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult Update(UsuarioDto usuario) 
         {
             _service.Update(usuario);
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int Id) 
         {
             _service.Delete(Id);
             return Ok();
         }
 
-        [HttpPost("login")]
+        [HttpPost("auth")]
         [AllowAnonymous]
         public ActionResult<LoginDto> Login(LoginDto? loginDto)
         {

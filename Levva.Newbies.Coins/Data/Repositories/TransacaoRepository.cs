@@ -1,6 +1,8 @@
 ﻿using Levva.Newbies.Coins.Data.Interfaces;
 using Levva.Newbies.Coins.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
+using System.Data;
 
 namespace Levva.Newbies.Coins.Data.Repositories
 {
@@ -11,10 +13,13 @@ namespace Levva.Newbies.Coins.Data.Repositories
         {
             _context = context;
         }
-        public void Create(Transacao transacao)
+        public Transacao Create(Transacao transacao)
         {
+            transacao.CreatedAt = DateTime.Now;
             _context.Transacao.Add(transacao);
             _context.SaveChanges();
+
+            return transacao;
         }
 
         public void Delete(int Id)
@@ -24,14 +29,22 @@ namespace Levva.Newbies.Coins.Data.Repositories
             _context.SaveChanges();
         }
 
-        public Transacao Get(int Id)
+        public Transacao Get(int id)
         {
-            return _context.Transacao.Find(Id);
+            return _context.Transacao.Include(x => x.Category).FirstOrDefault(x => x.Id == id);
         }
 
         public List<Transacao> GetAll()
         {
-            return _context.Transacao.ToList();
+            return _context.Transacao.Include(x => x.Category).OrderByDescending(x => x.CreatedAt).ToList();
+        }
+
+        public ICollection<Transacao> SearchByDescription(string search)
+        {
+            return _context.Transacao.Include(x => x.Category)
+                .Where(x => EF.Functions.Like(x.Description, $"%{search}%") || EF.Functions.Like(x.Category.Description, $"%{search}%"))
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
         }
 
         public void Update(Transacao transacao)

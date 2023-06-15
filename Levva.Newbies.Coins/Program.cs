@@ -28,13 +28,13 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
 
         //configura autenticação essencial para todos os endpoints para melhorar a segurança
-        builder.Services.AddMvc(config =>
-        {
-            var policy = new AuthorizationPolicyBuilder()
-                            .RequireAuthenticatedUser()
-                            .Build();
-            config.Filters.Add(new AuthorizeFilter(policy));
-        });
+        //builder.Services.AddMvc(config =>
+        //{
+        //    var policy = new AuthorizationPolicyBuilder()
+        //                    .RequireAuthenticatedUser()
+        //                    .Build();
+        //    config.Filters.Add(new AuthorizeFilter(policy));
+        //});
 
         builder.Services.AddAuthentication(x =>
         {
@@ -96,6 +96,20 @@ public class Program
         builder.Services.AddScoped<ITransacaoService, TransacaoService>();
         builder.Services.AddScoped<ICategoriaService, CategoriaService>();      
 
+        //CONECTANDO FRONT-END
+        var provider = builder.Services.BuildServiceProvider(); 
+        var configuration = provider.GetRequiredService<IConfiguration>();
+
+        builder.Services.AddCors(options =>
+        {
+            var frontendURL = configuration.GetValue<string>("frontend_url");
+
+            options.AddDefaultPolicy(builder =>
+            {
+                builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+            });
+        });
+
         var app = builder.Build();
 
 
@@ -107,6 +121,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseCors();
 
         app.UseAuthentication();
 

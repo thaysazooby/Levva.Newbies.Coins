@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Levva.Newbies.Coins.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20230510165137_Inicial")]
-    partial class Inicial
+    [Migration("20230615142849_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace Levva.Newbies.Coins.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Descricao")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -41,30 +41,30 @@ namespace Levva.Newbies.Coins.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Data")
+                    b.Property<decimal>("Amount")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Descricao")
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Tipo")
+                    b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UsuarioId")
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId");
+                    b.HasIndex("CategoryId");
 
-                    b.HasIndex("UsuarioId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Transacao");
                 });
@@ -79,11 +79,11 @@ namespace Levva.Newbies.Coins.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Nome")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Senha")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -94,31 +94,31 @@ namespace Levva.Newbies.Coins.Migrations
 
             modelBuilder.Entity("Levva.Newbies.Coins.Domain.Models.Transacao", b =>
                 {
-                    b.HasOne("Levva.Newbies.Coins.Domain.Models.Categoria", "Categoria")
-                        .WithMany("Transacoes")
-                        .HasForeignKey("CategoriaId")
+                    b.HasOne("Levva.Newbies.Coins.Domain.Models.Categoria", "Category")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Levva.Newbies.Coins.Domain.Models.Usuario", "Usuario")
-                        .WithMany("Transacoes")
-                        .HasForeignKey("UsuarioId")
+                    b.HasOne("Levva.Newbies.Coins.Domain.Models.Usuario", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Categoria");
+                    b.Navigation("Category");
 
-                    b.Navigation("Usuario");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Levva.Newbies.Coins.Domain.Models.Categoria", b =>
                 {
-                    b.Navigation("Transacoes");
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Levva.Newbies.Coins.Domain.Models.Usuario", b =>
                 {
-                    b.Navigation("Transacoes");
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }
